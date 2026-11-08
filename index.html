@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#172b2a">
+<title>30 Days — Habit Tracker</title>
+<style>
+:root{
+  --bg:#f3f2ec;--paper:#fffefa;--ink:#1d302e;--muted:#77817b;
+  --line:#e4e5dc;--accent:#3d7770;--accent2:#d7a45b;--soft:#e9f1ed;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 18px 48px}
+header{background:var(--ink);color:#f7f5ed;border-radius:22px;padding:28px 30px;position:relative;overflow:hidden}
+header:after{content:"30";position:absolute;right:24px;top:-32px;font-size:170px;font-weight:800;color:#ffffff0c;line-height:1}
+.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:10px;color:#b9ccc4;font-weight:700}
+h1{font-size:clamp(28px,5vw,42px);margin:8px 0 5px;letter-spacing:-.04em}
+header p{margin:0;color:#c6d2cb;font-size:14px}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:22px;position:relative;z-index:1}
+.datebox{font-size:12px;color:#d8e2dc}
+button{font:inherit;cursor:pointer;border:0}
+.headerbtn{background:#e8eee8;color:var(--ink);padding:10px 14px;border-radius:10px;font-weight:700;font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:15px 17px}
+.stat small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+.stat strong{font-size:25px;display:block;margin-top:4px;letter-spacing:-.04em}
+.progress{height:7px;background:#e8e9e1;border-radius:99px;overflow:hidden;margin-top:9px}
+.progress span{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .2s}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:18px;margin-top:15px;overflow:hidden}
+.panelhead{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.panelhead h2{font-size:16px;margin:0;letter-spacing:-.02em}
+.hint{font-size:11px;color:var(--muted)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:780px}
+th,td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);text-align:center;padding:8px 5px}
+th{font-size:10px;color:var(--muted);font-weight:700;background:#fafaf5;position:sticky;top:0;z-index:2}
+th:first-child,td:first-child{position:sticky;left:0;background:var(--paper);z-index:3;text-align:left;min-width:205px;padding-left:16px;border-right:1px solid var(--line)}
+th:first-child{z-index:4;background:#fafaf5}
+td{height:42px}
+td:first-child{font-size:12px;font-weight:600}
+.habitnum{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:var(--soft);color:var(--accent);font-size:10px;margin-right:8px}
+input[type=checkbox]{appearance:none;width:17px;height:17px;border:1.5px solid #c9d0c8;border-radius:5px;background:white;cursor:pointer;vertical-align:middle;transition:.15s}
+input[type=checkbox]:checked{background:var(--accent);border-color:var(--accent);position:relative}
+input[type=checkbox]:checked:after{content:"✓";position:absolute;color:white;font-size:12px;font-weight:800;left:2px;top:-1px}
+tr:last-child td{border-bottom:0}
+.daydone{background:#f1f6f2}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.action{background:#edf1eb;color:var(--ink);padding:9px 12px;border-radius:9px;font-size:11px;font-weight:700}
+.action.primary{background:var(--accent);color:white}
+.note{margin-top:15px;background:#f5eee1;border:1px solid #eadcc3;border-radius:14px;padding:14px 16px;font-size:12px;line-height:1.55;color:#63553e}
+.note strong{color:#4b402e}
+footer{text-align:center;color:var(--muted);font-size:10px;margin-top:18px}
+ .mobile-panel{display:none}
+.daytop{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;letter-spacing:.08em;margin-bottom:8px}
+.daytop span:last-child{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:0}
+.dayprogress{height:6px;background:#e8e9e1;border-radius:99px;overflow:hidden;margin-bottom:16px}
+.dayprogress span{display:block;height:100%;width:0;background:var(--accent);border-radius:99px}
+.daygrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin-bottom:18px}
+.daybtn{background:#f0f1eb;color:#66736b;border-radius:10px;padding:10px 2px;font-size:12px;font-weight:700;border:1px solid transparent}
+.daybtn.active{background:var(--ink);color:white}
+.daybtn.done{border-color:#8ab2a0;background:#e8f1eb;color:#356b5d}
+.daybtn.active.done{background:var(--accent);color:white}
+.habitlist{display:grid;gap:8px}
+.habitrow{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fafaf5;border:1px solid var(--line);border-radius:12px;padding:12px 13px;min-height:49px}
+.habitrow label{font-size:13px;font-weight:600;display:flex;align-items:center;gap:9px;flex:1}
+.habitrow .habitnum{flex:0 0 23px;margin:0}
+.habitrow input{width:21px;height:21px;flex:0 0 21px}
+@media(max-width:700px){
+ .wrap{padding:12px 10px 28px}
+ header{padding:21px 18px;border-radius:17px}
+ header:after{font-size:125px;right:8px;top:-15px}
+ h1{font-size:30px}
+ header p{font-size:12px;max-width:230px}
+ .topline{margin-top:17px}
+ .headerbtn{padding:9px 10px;font-size:10px}
+ .stats{gap:7px;margin:11px 0}
+ .stat{padding:10px 9px;border-radius:12px}
+ .stat strong{font-size:19px}
+ .stat small{font-size:8px;letter-spacing:.06em}
+ .progress{height:5px}
+ .mobile-panel{display:block}
+ .desktop-panel{display:none}
+ .panel{border-radius:15px}
+ .panelhead{padding:14px 13px;align-items:flex-start}
+ .panelhead h2{font-size:14px}
+ .hint{font-size:10px;max-width:205px;line-height:1.4;margin-top:3px}
+ .actions{width:100%}
+ .action{font-size:10px;padding:8px 9px}
+ .mobile-content{padding:14px 12px 16px}
+ .daygrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+ .daybtn{padding:10px 0;font-size:11px;border-radius:9px}
+ .habitrow{padding:11px 10px}
+ .habitrow label{font-size:12px}
+ .note{font-size:11px;padding:12px}
+ footer{font-size:9px;line-height:1.5}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Personal growth · 30 day challenge</div>
+  <h1>Build the habit.<br>Become consistent.</h1>
+  <p>Progres kecil, dilakukan berulang kali.</p>
+  <div class="topline">
+    <div class="datebox">PERIODE <strong id="period">30 hari · Hari 1–30</strong></div>
+    <button class="headerbtn" id="export">Unduh progres CSV ↓</button>
+  </div>
+</header>
+
+<section class="stats">
+  <div class="stat"><small>Total checklist</small><strong id="total">0 / 300</strong><div class="progress"><span id="totalbar"></span></div></div>
+  <div class="stat"><small>Konsistensi</small><strong id="rate">0%</strong><div class="progress"><span id="ratebar"></span></div></div>
+  <div class="stat"><small>Hari paling produktif</small><strong id="best">—</strong><div class="progress"><span id="bestbar"></span></div></div>
+</section>
+
+<section class="panel mobile-panel">
+  <div class="panelhead">
+    <div><h2>Checklist harian</h2><div class="hint">Pilih hari, lalu centang habit yang sudah dilakukan.</div></div>
+    <div class="actions">
+      <button class="action" id="uncheckToday">Kosongkan hari</button>
+      <button class="action primary" id="reset">Reset semua</button>
+    </div>
+  </div>
+  <div class="mobile-content">
+    <div class="daytop"><span id="selectedDayLabel">HARI 01</span><span id="dayCount">0/10 selesai</span></div>
+    <div class="dayprogress"><span id="daybar"></span></div>
+    <div class="daygrid" id="daygrid" aria-label="Pilih hari"></div>
+    <div class="habitlist" id="habitlist"></div>
+  </div>
+</section>
+<section class="panel desktop-panel">
+  <div class="panelhead">
+    <div><h2>Rekap 30 hari</h2><div class="hint">Tampilan tabel bulanan.</div></div>
+  </div>
+  <div class="tablewrap">
+    <table id="tracker"><thead><tr><th>HABIT / DAY</th></tr></thead><tbody></tbody></table>
+  </div>
+</section>
+
+<div class="note">
+  <strong>Catatan untuk habit makan:</strong> Intermittent fasting atau sengaja membatasi jam makan bukan target yang disarankan untuk remaja yang masih tumbuh, kecuali atas arahan tenaga kesehatan. Kolom tersebut diganti menjadi <strong>pola makan teratur</strong>—makan cukup dan seimbang, tanpa melewatkan waktu makan demi berpuasa.
+</div>
+<footer>Data tersimpan otomatis di browser/perangkat ini. Gunakan browser yang sama agar progres tetap tersedia.</footer>
+</div>
+<script>
+const habits = [
+"Ibadah","Olahraga","Premeditation Memory","Belajar Skill Baru","Belajar Akademik",
+"Belajar Public Speaking","Baca Buku","Pola Makan Teratur","Detox Game & Scrolling","Journaling"
+];
+const KEY="habit-tracker-30d-v1";
+let data=JSON.parse(localStorage.getItem(KEY)||"{}");
+let selectedDay=1;
+const table=document.getElementById("tracker");
+const head=table.querySelector("thead tr"), body=table.querySelector("tbody");
+for(let d=1;d<=30;d++){let th=document.createElement("th");th.textContent=String(d).padStart(2,"0");head.appendChild(th)}
+habits.forEach((habit,i)=>{
+ let tr=document.createElement("tr");
+ let label=document.createElement("td");
+ label.innerHTML=`<span class="habitnum">${String(i+1).padStart(2,"0")}</span>${habit}`;
+ tr.appendChild(label);
+ for(let d=1;d<=30;d++){
+   let td=document.createElement("td"), cb=document.createElement("input");
+   cb.type="checkbox";cb.setAttribute("aria-label",`${habit}, hari ${d}`);
+   cb.checked=!!(data[d]&&data[d][i]);
+   cb.addEventListener("change",()=>{data[d]??={};data[d][i]=cb.checked;save();});
+   td.appendChild(cb);tr.appendChild(td);
+ }
+ body.appendChild(tr);
+});
+const grid=document.getElementById("daygrid");
+for(let d=1;d<=30;d++){
+ const b=document.createElement("button");b.className="daybtn";b.textContent=String(d).padStart(2,"0");
+ b.addEventListener("click",()=>{selectedDay=d;renderDay()});grid.appendChild(b);
+}
+const list=document.getElementById("habitlist");
+habits.forEach((habit,i)=>{
+ const row=document.createElement("div");row.className="habitrow";
+ row.innerHTML=`<label><span class="habitnum">${String(i+1).padStart(2,"0")}</span>${habit}</label>`;
+ const cb=document.createElement("input");cb.type="checkbox";cb.setAttribute("aria-label",habit);
+ cb.addEventListener("change",()=>{data[selectedDay]??={};data[selectedDay][i]=cb.checked;save()});
+ row.appendChild(cb);list.appendChild(row);
+});
+function save(){localStorage.setItem(KEY,JSON.stringify(data));update();renderDay()}
+function renderDay(){
+ document.getElementById("selectedDayLabel").textContent=`HARI ${String(selectedDay).padStart(2,"0")}`;
+ const checks=habits.map((_,i)=>!!data[selectedDay]?.[i]);
+ const count=checks.filter(Boolean).length;
+ document.getElementById("dayCount").textContent=`${count}/10 selesai`;
+ document.getElementById("daybar").style.width=(count*10)+"%";
+ [...list.querySelectorAll("input")].forEach((cb,i)=>cb.checked=checks[i]);
+ [...grid.children].forEach((b,i)=>{
+   const d=i+1,n=habits.filter((_,j)=>data[d]?.[j]).length;
+   b.classList.toggle("active",d===selectedDay);
+   b.classList.toggle("done",n===10);
+   b.setAttribute("aria-label",`Hari ${d}, ${n} dari 10 habit`);
+ });
+}
+function update(){
+ let count=0,best=0,bestDay="—";
+ for(let d=1;d<=30;d++){let n=habits.reduce((s,_,i)=>s+(data[d]?.[i]?1:0),0);count+=n;if(n>best){best=n;bestDay=`Hari ${d}`}}
+ let pct=Math.round(count/300*100);
+ document.getElementById("total").textContent=`${count} / 300`;
+ document.getElementById("rate").textContent=pct+"%";
+ document.getElementById("best").textContent=best?bestDay:"—";
+ document.getElementById("totalbar").style.width=pct+"%";
+ document.getElementById("ratebar").style.width=pct+"%";
+ document.getElementById("bestbar").style.width=(best/10*100)+"%";
+}
+document.getElementById("uncheckToday").addEventListener("click",()=>{
+ if(confirm(`Kosongkan semua checklist untuk Hari ${selectedDay}?`)){
+   data[selectedDay]={};
+   document.querySelectorAll("#tracker tbody tr").forEach((tr)=>{tr.children[selectedDay].querySelector("input").checked=false});
+   save();
+ }
+});
+document.getElementById("reset").addEventListener("click",()=>{
+ if(confirm("Hapus seluruh checklist 30 hari? Tindakan ini tidak dapat dibatalkan.")){
+ data={};document.querySelectorAll("input[type=checkbox]").forEach(cb=>cb.checked=false);save();
+ }
+});
+document.getElementById("export").addEventListener("click",()=>{
+ const rows=[["Habit",...Array.from({length:30},(_,i)=>`Hari ${i+1}`)]];
+ habits.forEach((h,i)=>rows.push([h,...Array.from({length:30},(_,j)=>data[j+1]?.[i]?"Selesai":"Belum")]));
+ const csv=rows.map(r=>r.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(",")).join("\n");
+ const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8;"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="habit-tracker-30-hari.csv";a.click();URL.revokeObjectURL(a.href);
+});
+update();renderDay();
+</script>
+</body></html>
